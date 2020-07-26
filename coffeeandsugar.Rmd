@@ -1,0 +1,123 @@
+---
+title: "Do Future Price of Coffee and Sugar have an Impact on Starbuck and Dunkin Brand's stock?"
+author: "Nina Vu"
+date: "8/2/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<h5>[rmd version of file](coffeeandsugar.Rmd)</h5>
+
+# Thoughts I Have While Drinking Coffee {#anchor}
+
+Welcome to my project where I use RStudio to analyze and plot the stock data. In this particular work, I choose to take a deeper look into the stock of well-known companies like Starbuck (SBUX) and Dunkin Donut (DNKN). As a coffee enthusiast, I am wondering if the price of raw materials such as coffee and sugar influences the stock prices of Starbuck and Dunkin in an inverse relationship. Using the future price of coffee beans and sugar, I hope that I will find out what weighs heavier into the price of my coffee.So if you have a cup of coffee in your hand, take a sip and let me walk you through my finding.
+
+
+
+```{r, echo=FALSE, out.width="50%",out.height="50%", fig.align='center', fig.cap="LOL dog coffee Uploaded by Better Homes & Gardens Real Estate - Leaskou Partners on Pinterest"}
+knitr::include_graphics("https://i.pinimg.com/originals/f8/f7/e1/f8f7e10dbb0ee291b2c846562b96b758.jpg")
+```
+
+
+# The Work Begins
+
+
+To find out whether there is a direct relationship between those raw materials and the coffee stock, I have to obtain Starbuck and Dunkin' Brand stock data first. Using “getSymbols” function, pulling the stock information from Yahoo was a breeze. However, I want to keep it simple. Therefore, I will only look at the stock prices from the beginning of 2020.
+
+``` {r stock_data, message = FALSE, warning = FALSE, include = FALSE}
+library(quantmod)
+
+getSymbols(Symbols = c("DNKN", "SBUX"), src = "yahoo", from = "2020-01-01", to = Sys.Date(), auto.assign = TRUE)
+
+```
+
+
+The next step is to obtain data on the future price of coffee and sugar. Future prices or continuous contract is made of several contracts to form information that helps business predict the trend and make a decision. I choose to pull the data from Quandl because they make it easy to obtain an API key.
+
+```{r future_price, message = FALSE, warning = FALSE, echo = FALSE}
+library(Quandl)
+library(dplyr)     # for mutate function
+
+#Price of Sugar
+Sugar_Contract <- Quandl(code = "CHRIS/ICE_SB1", start_date = "2020-01-01", api_key = "uZELH75uxUZH1ck7iNPF")
+Sugar_Contract <- mutate(Sugar_Contract, Name = "Sugar")
+Sugar_Contract <- select(Sugar_Contract, Date, Open, Name)
+Sugar_Contract <- rename(Sugar_Contract, Value = Open)
+
+#Price of coffee
+Coffee_Contract <- Quandl(code = "CHRIS/ICE_KC5", start_date = "2020-01-01", api_key = "uZELH75uxUZH1ck7iNPF")
+Coffee_Contract <- mutate(Coffee_Contract, Name = "Coffee")
+Coffee_Contract <- select(Coffee_Contract, Date, Open, Name)
+Coffee_Contract <- rename(Coffee_Contract, Value = Open)
+
+```
+
+After I have the data from Quandl, I noticed that my data from Yahoo and Quandl are in different formats. To create a graph and unveil the relationship, I am only interested in the date, time, and stock value of that day. Therefore, I have to put them in the format that I want using the tibble package in R.  Finally, I only have to combine the data in one big table before graphing.
+
+```{r process_data, message = FALSE, warning = FALSE, echo = FALSE}
+library(tibble)    # for as_tibble() function
+
+SBUX_tibble <- as_tibble(SBUX)
+SBUX_tibble <- mutate(SBUX_tibble, Date = index(SBUX))
+SBUX_tibble <- mutate(SBUX_tibble, Name = "Starbuck")
+SBUX_tibble <- select(SBUX_tibble, Date, SBUX.Close, Name)
+SBUX_tibble <- rename(SBUX_tibble, Value = SBUX.Close)
+
+
+DNKN_tibble <- as_tibble(DNKN) 
+DNKN_tibble <- mutate(DNKN_tibble, Date = index(DNKN))
+DNKN_tibble <- mutate(DNKN_tibble, Name = "Dunkin")
+DNKN_tibble <- select(DNKN_tibble, Date, DNKN.Close, Name)
+DNKN_tibble <- rename(DNKN_tibble, Value = DNKN.Close)
+
+```
+
+
+```{r combine_data, echo = FALSE}
+
+#Combine all Data
+all_data <- rbind(SBUX_tibble, DNKN_tibble, Sugar_Contract, Coffee_Contract)
+
+```
+
+
+# Analyze the Plot
+
+
+```{r plot_data, echo = FALSE, message = FALSE, warning = FALSE, fig.align = "center" }
+library(ggplot2)   # for ggplot() function
+
+#Create a plot
+ggplot(all_data, aes(x = Date)) +
+  geom_line(aes(y = Value, color = Name), size = 1) +
+  scale_x_date(date_breaks = "1 month", date_labels =  "%B %d") + 
+  scale_y_continuous(limits = c(0, max(all_data$Value))) +       # Start the y axis at 0 instead of minimum value
+  labs(title = "How Future Price of Sugar and Coffee Afftect Coffee Stock Prices",
+       subtitle ="Using Future Prices of Commodity on Quandl", # Subtitle
+       caption = "Data from Yahoo and Quandl",
+       color = "Legend") +
+  theme_bw()
+```
+
+
+From my observation, the patterns of both stocks represent an inverse relationship with the future the price of coffee. This is no surprise because coffee is the main ingredient. However, why does sugar price not fluctuate and overall do not have an impact on both stocks?
+
+It is worth noticing that most of the coffee that the US consuming is an import from countries like Colombia and Brazil. Therefore, coffee beans are not cheap. On March 1st, when COVID-19 started to hit hard, the supply chain for coffee was also disrupted. CNBC news reported that many companies were hoarding coffee (Tan, 2020). These reasons account for why coffee prices spike while other stocks go down. Meanwhile, most of the sugar that we use is from the United States. USDA has confirmed that the U.S  is among the world's largest sugar producers (USDA, 2020). The pattern of sugar price is predictable because we have a constant amount of supply.
+
+Keep in mind that this project has its flaws. For example, Dunkin' Brands sell more product than just coffee. The future price of sugar does not specify that all the continuous contract occurs within the United States. Therefore, I hope that you treat this as a fun read and enjoy your coffee.
+
+
+# References
+
+
+United States Department of Agriculture.(April, 2020). Sugar & Sweeteners. [Digtital Article]. https://www.ers.usda.gov/topics/crops/sugar-sweeteners/background/
+
+
+Tan, W. (April, 2020). Farmers could be winners as coffee prices spike and countries hoard during the pandemic. CNBC.com. [Digital Article]. https://www.cnbc.com/2020/04/20/coronavirus-coffee-prices-rise-as-countries-hoard-food-supplies-lifting-farmers.html
+
+
+
+

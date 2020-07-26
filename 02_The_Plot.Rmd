@@ -1,0 +1,46 @@
+
+---
+title: "Untitled"
+author: "Nina Vu"
+date: "7/15/2020"
+output: html_document
+---
+
+
+
+#Plot
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Code to plot
+```{r}
+#Create a plot
+ggplot(all_data, aes(x = Date)) +
+  geom_line(aes(y = Value, color = Name), size = 1) +
+  scale_x_date(date_breaks = "1 month", date_labels =  "%B %d") + # Format x axis: Break each week, show full month and day
+  scale_y_continuous(limits = c(0, max(all_data$Value))) +       # Start the y axis at 0 instead of minimum value
+  labs(title = "How Sugar and Cofee Afftect Beverage Stock Prices",
+       subtitle ="Using Future Prices of Commodity on Quandl", # Subtitle
+       caption = "Data from Yahoo and Quandl",
+       color = "Legends") +
+  theme_bw()
+```
+
+```{r all_data}
+summary(all_data)
+```
+
+## Plots
+
+```{r all data, echo=FALSE}
+plot(all_data)
+```
+
+ 
+
+
+
+ 
