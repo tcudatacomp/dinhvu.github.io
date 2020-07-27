@@ -9,7 +9,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-[rmd version of file](coffeeandsugar.Rmd)
+[rmd version of file](coffeeandsugar3.Rmd)
 
 # Thoughts I Have While Drinking Coffee {#anchor}
 
