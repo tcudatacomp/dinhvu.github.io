@@ -9,17 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-<h5>[rmd version of file](coffeeandsugar.Rmd)</h5>
+[rmd version of file](coffeeandsugar.Rmd)
 
 # Thoughts I Have While Drinking Coffee {#anchor}
 
 Welcome to my project where I use RStudio to analyze and plot the stock data. In this particular work, I choose to take a deeper look into the stock of well-known companies like Starbuck (SBUX) and Dunkin Donut (DNKN). As a coffee enthusiast, I am wondering if the price of raw materials such as coffee and sugar influences the stock prices of Starbuck and Dunkin in an inverse relationship. Using the future price of coffee beans and sugar, I hope that I will find out what weighs heavier into the price of my coffee.So if you have a cup of coffee in your hand, take a sip and let me walk you through my finding.
-
-
-
-```{r, echo=FALSE, out.width="50%",out.height="50%", fig.align='center', fig.cap="LOL dog coffee Uploaded by Better Homes & Gardens Real Estate - Leaskou Partners on Pinterest"}
-knitr::include_graphics("https://i.pinimg.com/originals/f8/f7/e1/f8f7e10dbb0ee291b2c846562b96b758.jpg")
-```
 
 
 # The Work Begins
